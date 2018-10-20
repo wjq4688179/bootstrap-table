@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.ProductMapper">
+	
+	<insert id="insert" parameterType="Product">
+		insert into product values(#{pid},#{pname},#{price},#{pdate})
+	</insert>
+	
+	<delete id="delete" parameterType="Product">
+		delete from product where pid = #{pid}m
+	</delete>
+	
+	<delete id="deleteProducts" parameterType="java.util.List">
+		delete from product where pid in
+		<foreach collection="array" item="pid"  open="(" separator="," close=")">
+			#{pid}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterType="Product">
+		update product
+		<set>
+			<if test="pname!=null and pname!=''">
+				pname = #{pname},
+			</if>
+			<if test="price!=null and price!=''">
+				price = #{price},
+			</if>
+			<if test="pdate!=null and pdate!=''">
+				pdate = #{pdate},
+			</if>
+		</set>
+		where pid = #{pid}
+	</update>
+	
+	<select id="selectByPage"  resultType="Product" parameterType="com.alibaba.fastjson.JSONObject"> 
+		select pid,pname,price,pdate from product
+		<where>
+			<if test="search!=null and search!=''">
+				pname like '%${search}%'
+			</if>
+		</where>
+		limit #{offset},#{limit}
+	</select>
+	
+	<select id="selectAll"  resultType="com.alibaba.fastjson.JSONObject">
+		select pid,pname,price,pdate from product
+	</select>
+	
+	<select id="selectCount" resultType="java.lang.Long" parameterType="com.alibaba.fastjson.JSONObject">
+		select Count(*) from product
+		<where>
+			<if test="search!=null and search!=''">
+				pname like '%${search}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectMaxId" resultType="java.lang.Long">
+		select max(pid) from product
+	</select>
+	
+</mapper>
